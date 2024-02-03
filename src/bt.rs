@@ -7,22 +7,16 @@ use xshell::Shell;
 // bt () {
 // local choice="${1:-1}"
 //
-//  case "$choice" in
-//    1) choice="E0:EB:40:42:4C:B8"
-//      ;;
-//    2) choice="20:15:82:3C:11:DC"
-//      ;;
-//  esac
-//
 //  bluetoothctl info "${choice}" | grep 'Connected: yes' &>/dev/null || \
 //    bluetoothctl connect "${choice}"
 //}
 
+// TODO: handle some errors
 const PODS: [&str; 2] = ["E0:EB:40:42:4C:B8", "20:15:82:3C:11:DC"];
+const WAIT_TIMEOUT: usize = 60;
 
 pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
     let mut pod = "";
-    let wait_timeout = 60;
 
     println!("Scanning for... one of {:?}", PODS);
     let mut cmd = Command::new("bluetoothctl")
@@ -36,7 +30,7 @@ pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
 
     // 30 second timeout
     let thread = thread::spawn(move || {
-        for _ in 0..wait_timeout {
+        for _ in 0..WAIT_TIMEOUT {
             if let Ok(Some(_)) = cmd.try_wait() {
                 return;
             }
@@ -58,7 +52,7 @@ pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
     if pod.is_empty() {
         anyhow::bail!(
             "Failed to find any pods in the last {} seconds... exiting.",
-            wait_timeout
+            WAIT_TIMEOUT
         );
     }
 
