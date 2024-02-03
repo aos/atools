@@ -35,7 +35,7 @@
               postInstall = ''
                 ${builtins.concatStringsSep "\n"
                   (builtins.map
-                    (x: "ln -s $out/bin/${name} $out/bin/${pkgs.lib.removeSuffix ".rs" x}")
+                    (x: "ln $out/bin/${name} $out/bin/${pkgs.lib.removeSuffix ".rs" x}")
                     (builtins.filter
                       (n: n != "lib.rs" && n != "main.rs")
                       (builtins.attrNames

@@ -15,6 +15,18 @@ fn main() -> anyhow::Result<()> {
         .to_str()
         .unwrap_or_default();
 
+    if progn == "tools" {
+        anyhow::bail!(
+            "Available tools: [ {} ]",
+            TOOLS
+                .iter()
+                .copied()
+                .map(|(n, _)| n)
+                .collect::<Vec<&str>>()
+                .join(" "),
+        )
+    };
+
     let (_name, run) = TOOLS
         .iter()
         .find(|&&(name, _run)| name == progn)
@@ -22,4 +34,20 @@ fn main() -> anyhow::Result<()> {
 
     let sh = Shell::new()?;
     run(&sh)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use xshell::{cmd, Shell};
+
+    #[test]
+    fn one() {
+        let sh = Shell::new().unwrap();
+        {
+            cmd!(sh, "cargo build --release").run().unwrap();
+            for &(name, _) in TOOLS {
+            }
+        }
+    }
 }

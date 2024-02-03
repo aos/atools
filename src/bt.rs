@@ -1,7 +1,5 @@
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
-use std::thread;
-use std::time::Duration;
 use xshell::Shell;
 
 // bt () {
@@ -13,13 +11,13 @@ use xshell::Shell;
 
 // TODO: handle some errors
 const PODS: [&str; 2] = ["E0:EB:40:42:4C:B8", "20:15:82:3C:11:DC"];
-const WAIT_TIMEOUT: usize = 60;
 
 pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
     let mut pod = "";
 
     println!("Scanning for... one of {:?}", PODS);
-    let mut cmd = Command::new("bluetoothctl")
+    let mut cmd = Command::new("/usr/bin/stdbuf")
+        .args(["-o0", "bluetoothctl"])
         .args(["scan", "on"])
         .stdout(Stdio::piped())
         .spawn()?;
@@ -28,34 +26,15 @@ pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
         .take()
         .ok_or_else(|| anyhow::format_err!("Failed to get stdout"))?;
 
-    // 30 second timeout
-    let thread = thread::spawn(move || {
-        for _ in 0..WAIT_TIMEOUT {
-            if let Ok(Some(_)) = cmd.try_wait() {
-                return;
-            }
-            thread::sleep(Duration::from_secs(1));
-        }
-        cmd.kill().expect("Unable to kill child process");
-    });
-
-    let scan_reader = BufReader::new(out);
-    for line in scan_reader.lines() {
-        let line = line?;
+    let mut scan_reader = BufReader::new(out);
+    let mut line = String::new();
+    while scan_reader.read_line(&mut line)? > 0 {
         if let Some(p) = PODS.iter().find(|&&p| line.contains(p)) {
             pod = p;
             break;
         }
+        line.clear();
     }
-
-    thread.join().unwrap();
-    if pod.is_empty() {
-        anyhow::bail!(
-            "Failed to find any pods in the last {} seconds... exiting.",
-            WAIT_TIMEOUT
-        );
-    }
-
     println!("found pod: {}", pod);
 
     println!("Pairing...");
@@ -67,7 +46,8 @@ pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
 }
 
 fn wrap_cmd(args: &[&str], search: &str) -> anyhow::Result<()> {
-    let mut cmd = Command::new("bluetoothctl")
+    let mut cmd = Command::new("/usr/bin/stdbuf")
+        .args(["-o0", "bluetoothctl"])
         .args(args)
         .stdout(Stdio::piped())
         .spawn()?;
