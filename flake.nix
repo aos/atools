@@ -1,5 +1,5 @@
 {
-  description = "Atools";
+  description = "atools";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -31,6 +31,7 @@
             src = ./.;
             cargoLock.lockFile = ./Cargo.lock;
 
+            # Hard links the binaries to the main binary
             postInstall = ''
               ${builtins.concatStringsSep "\n"
                 (builtins.map

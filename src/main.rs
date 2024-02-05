@@ -38,16 +38,19 @@ fn main() -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::TOOLS;
     use xshell::{cmd, Shell};
 
     #[test]
-    fn one() {
+    fn link() -> anyhow::Result<()> {
         let sh = Shell::new().unwrap();
-        {
-            cmd!(sh, "cargo build --release").run().unwrap();
-            for &(name, _) in TOOLS {
-            }
+        cmd!(sh, "cargo build --release").run().unwrap();
+        for &(name, _) in TOOLS {
+            sh.hard_link(
+                "./target/release/atools",
+                format!("./target/release/{name}"),
+            )?;
         }
+        Ok(())
     }
 }

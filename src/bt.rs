@@ -10,8 +10,9 @@ const PODS: [&str; 2] = ["E0:EB:40:42:4C:B8", "20:15:82:3C:11:DC"];
 const TIMEOUT_SEC: usize = 60;
 
 pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
+    println!("Searching for pods: {:?}", PODS);
     if let Some(pod) = find_pod(PODS, TIMEOUT_SEC)? {
-        println!("found pod: {}", pod);
+        println!("Found pod: {}", pod);
 
         println!("Pairing...");
         wrap_cmd(&["pair", &pod], "Pairing successful")?;
@@ -46,7 +47,7 @@ fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
     let handle = thread::spawn(move || {
         for _ in 0..timeout {
             if let Ok(_) = rx_found.try_recv() {
-                return
+                return;
             }
             thread::sleep(Duration::from_secs(1));
         }
