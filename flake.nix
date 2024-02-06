@@ -23,9 +23,13 @@
             overlays = [ fenix.overlays.default ];
           };
           cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+          rustToolchain = fenix.packages.${system}.stable.toolchain;
         in
         {
-          packages.atools = pkgs.rustPlatform.buildRustPackage rec {
+          packages.atools = (pkgs.makeRustPlatform {
+            cargo = rustToolchain;
+            rustc = rustToolchain;
+          }).buildRustPackage rec {
             name = cargoToml.package.name;
             version = cargoToml.package.version;
             src = ./.;
@@ -45,7 +49,7 @@
           packages.default = self'.packages.atools;
           devShells.default = with pkgs; mkShell {
             nativeBuildInputs = [
-              fenix.packages.${system}.stable.toolchain
+              rustToolchain
               rust-analyzer
               pkg-config
             ];
