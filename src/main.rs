@@ -4,6 +4,7 @@ use xshell::Shell;
 mod bt;
 mod yk_gpg;
 
+const PKG_NAME: &str = env!("CARGO_PKG_NAME");
 const TOOLS: &[(&str, fn(&Shell) -> anyhow::Result<()>)] =
     &[("bt", bt::run), ("yk_gpg", yk_gpg::run)];
 
@@ -15,7 +16,7 @@ fn main() -> anyhow::Result<()> {
         .to_str()
         .unwrap_or_default();
 
-    if progn == "tools" {
+    if progn == PKG_NAME {
         anyhow::bail!(
             "Available tools: [ {} ]",
             TOOLS

@@ -46,7 +46,7 @@ fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
     let (tx_found, rx_found) = mpsc::channel();
     let handle = thread::spawn(move || {
         for _ in 0..timeout {
-            if let Ok(_) = rx_found.try_recv() {
+            if rx_found.try_recv().is_ok() {
                 return;
             }
             thread::sleep(Duration::from_secs(1));
@@ -64,7 +64,7 @@ fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
             break;
         }
         line.clear();
-        if let Ok(_) = rx_timeout.try_recv() {
+        if rx_timeout.try_recv().is_ok() {
             break;
         }
     }

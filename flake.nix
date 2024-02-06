@@ -18,10 +18,6 @@
       systems = [ "x86_64-linux" ];
       perSystem = { pkgs, system, self', ... }:
         let
-          _module.args.pkgs = import nixpkgs {
-            inherit system;
-            overlays = [ fenix.overlays.default ];
-          };
           cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
           rustToolchain = fenix.packages.${system}.stable.toolchain;
         in
@@ -50,7 +46,7 @@
           devShells.default = with pkgs; mkShell {
             nativeBuildInputs = [
               rustToolchain
-              rust-analyzer
+              fenix.packages.${system}.stable.rust-analyzer
               pkg-config
             ];
 
