@@ -43,15 +43,15 @@
             '';
           };
           packages.default = self'.packages.atools;
-          devShells.default = with pkgs; mkShell {
-            nativeBuildInputs = [
-              rustToolchain
-              fenix.packages.${system}.stable.rust-analyzer
-              pkg-config
-            ];
-
+          devShells.default = self'.packages.default.overrideAttrs (super: {
+            nativeBuildInputs = with pkgs;
+              super.nativeBuildInputs
+              ++ [
+                fenix.packages.${system}.stable.rust-analyzer
+              ];
+            RUST_SRC_PATH = rustToolchain;
             RUST_BACKTRACE = 1;
-          };
+          });
         };
     };
 }
