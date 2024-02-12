@@ -18,7 +18,7 @@
         rustToolchain = fenix.packages.${system}.stable.toolchain;
       in {
         packages = rec {
-          atools = (pkgs.makeRustPlatform {
+          ${cargoToml.package.name} = (pkgs.makeRustPlatform {
             cargo = rustToolchain;
             rustc = rustToolchain;
           }).buildRustPackage rec {
@@ -35,7 +35,7 @@
                   (builtins.attrNames (builtins.readDir ./src))))}
             '';
           };
-          default = atools;
+          default = ${cargoToml.package.name};
         };
         devShells.default = self.packages.${system}.default.overrideAttrs
           (super: {
