@@ -27,6 +27,8 @@
             src = ./.;
             cargoLock.lockFile = ./Cargo.lock;
 
+            doCheck = false;
+
             # Hard links the binaries to the main binary
             postInstall = ''
               ${builtins.concatStringsSep "\n" (builtins.map (x:

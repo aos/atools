@@ -1,3 +1,4 @@
+use anyhow::Context;
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 use std::sync::mpsc;
@@ -31,11 +32,12 @@ pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
 
 fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
     let mut pod = None;
-    let mut cmd = Command::new("/usr/bin/stdbuf")
-        .args(["-o0", "bluetoothctl"])
+    let mut cmd = Command::new("stdbuf")
+        .args(["-oL", "bluetoothctl"])
         .args(["scan", "on"])
         .stdout(Stdio::piped())
-        .spawn()?;
+        .spawn()
+        .with_context(|| format!("`stdbuf` or `bluetoothctl` not in path"))?;
     let out = cmd
         .stdout
         .take()
@@ -74,11 +76,13 @@ fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
 }
 
 fn wrap_cmd(args: &[&str], search: &str) -> anyhow::Result<()> {
-    let mut cmd = Command::new("/usr/bin/stdbuf")
-        .args(["-o0", "bluetoothctl"])
+    let mut cmd = Command::new("stdbuf")
+        .args(["-oL", "bluetoothctl"])
         .args(args)
         .stdout(Stdio::piped())
-        .spawn()?;
+        .spawn()
+        .with_context(|| format!("`stdbuf` or `bluetoothctl` not in path"))?;
+
     let out = cmd
         .stdout
         .take()
