@@ -33,7 +33,7 @@ pub(crate) fn run(_: &Shell) -> anyhow::Result<()> {
 fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
     let mut pod = None;
     let mut cmd = Command::new("stdbuf")
-        .args(["-oL", "bluetoothctl"])
+        .args(["-o0", "bluetoothctl"])
         .args(["scan", "on"])
         .stdout(Stdio::piped())
         .spawn()
@@ -77,7 +77,7 @@ fn find_pod(pods: [&str; 2], timeout: usize) -> anyhow::Result<Option<String>> {
 
 fn wrap_cmd(args: &[&str], search: &str) -> anyhow::Result<()> {
     let mut cmd = Command::new("stdbuf")
-        .args(["-oL", "bluetoothctl"])
+        .args(["-o0", "bluetoothctl"])
         .args(args)
         .stdout(Stdio::piped())
         .spawn()
