@@ -9,7 +9,7 @@ const PKG_NAME: &str = env!("CARGO_PKG_NAME");
 const TOOLS: &[(&str, fn(&Shell) -> anyhow::Result<()>)] = &[
     // ("bt", bt::run),
     ("btw", btw::run),
-    ("ykg", ykg::run)
+    ("ykg", ykg::run),
 ];
 
 fn main() -> anyhow::Result<()> {

@@ -2,10 +2,9 @@ use rayon::prelude::*;
 use xshell::{cmd, Shell};
 
 pub(crate) fn run(sh: &Shell) -> anyhow::Result<()> {
-    let devices = cmd!(sh, "bluetoothctl devices")
-        .quiet()
-        .read()?;
-    let devices = devices.split("\n")
+    let devices = cmd!(sh, "bluetoothctl devices").quiet().read()?;
+    let devices = devices
+        .split("\n")
         .filter_map(|dev| dev.split(" ").nth(1))
         .collect::<Vec<_>>();
 
