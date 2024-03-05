@@ -27,6 +27,7 @@
             src = ./.;
             cargoLock.lockFile = ./Cargo.lock;
 
+            # Turn off tests so they don't run the postInstall hook
             doCheck = false;
 
             # Hard links the binaries to the main binary

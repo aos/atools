@@ -2,11 +2,15 @@ use std::path::PathBuf;
 use xshell::Shell;
 
 mod bt;
+mod btw;
 mod ykg;
 
 const PKG_NAME: &str = env!("CARGO_PKG_NAME");
-const TOOLS: &[(&str, fn(&Shell) -> anyhow::Result<()>)] =
-    &[("bt", bt::run), ("ykg", ykg::run)];
+const TOOLS: &[(&str, fn(&Shell) -> anyhow::Result<()>)] = &[
+    // ("bt", bt::run),
+    ("btw", btw::run),
+    ("ykg", ykg::run)
+];
 
 fn main() -> anyhow::Result<()> {
     let progn: PathBuf = std::env::args_os().next().unwrap_or_default().into();
