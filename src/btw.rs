@@ -8,6 +8,8 @@ pub(crate) fn run(sh: &Shell) -> anyhow::Result<()> {
         .filter_map(|dev| dev.split(" ").nth(1))
         .collect::<Vec<_>>();
 
+    cmd!(sh, "bluetoothctl power on").run()?;
+
     let found = devices.par_iter().find_any(|&&x| try_connect(x).is_ok());
     println!("{:?}", found);
 
