@@ -48,5 +48,10 @@
             RUST_SRC_PATH = rustToolchain;
             RUST_BACKTRACE = 1;
           });
-      });
+      }) //
+      {
+        overlays.default = final: prev: {
+          atools = self.packages.${prev.stdenv.hostPlatform.system}.atools;
+        };
+      };
 }
