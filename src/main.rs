@@ -3,6 +3,7 @@ use xshell::Shell;
 
 mod bt;
 mod btw;
+mod nospace;
 mod ykg;
 
 const PKG_NAME: &str = env!("CARGO_PKG_NAME");
@@ -10,6 +11,7 @@ const TOOLS: &[(&str, fn(&Shell) -> anyhow::Result<()>)] = &[
     // ("bt", bt::run),
     ("btw", btw::run),
     ("ykg", ykg::run),
+    ("nospace", nospace::run),
 ];
 
 fn main() -> anyhow::Result<()> {
