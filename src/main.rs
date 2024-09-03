@@ -3,6 +3,7 @@ use xshell::Shell;
 
 mod bt;
 mod btw;
+mod nfi;
 mod nospace;
 mod ykg;
 
@@ -11,6 +12,7 @@ const TOOLS: &[(&str, fn(&Shell) -> anyhow::Result<()>)] = &[
     // ("bt", bt::run),
     ("btw", btw::run),
     ("ykg", ykg::run),
+    ("nfi", nfi::run),
     ("nospace", nospace::run),
 ];
 
