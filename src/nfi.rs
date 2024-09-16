@@ -5,15 +5,18 @@ const DEFAULT_SOURCE: &str = "github:aos/flake-templates";
 
 pub(crate) fn run(sh: &Shell) -> anyhow::Result<()> {
     let flags = xflags::parse_or_exit! {
-        /// Different source
-        optional -s,--source source: String
-        /// File to rename
-        required name: String
+        /// Use the raw flake reference
+        optional -r,--raw
+        /// Name of flake template attribute
+        required flake_ref: String
     };
-    let name = flags.name;
-    let source = flags.source.unwrap_or(DEFAULT_SOURCE.to_string());
+    let source = if flags.raw {
+        flags.flake_ref
+    } else {
+        format!("{}#{}", DEFAULT_SOURCE.to_string(), flags.flake_ref)
+    };
 
-    cmd!(sh, "nix flake init -t {source}#{name}")
+    cmd!(sh, "nix flake init -t {source}")
         .run()
         .context("run nfi")
 }
