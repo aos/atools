@@ -7,10 +7,17 @@ pub(crate) fn run(sh: &Shell) -> anyhow::Result<()> {
         /// File to rename
         required path: PathBuf
     };
-    let curr_path = flags.path.to_str().context("path to string")?;
-    let replaced = curr_path.replace(" ", "_");
+    let full_path = &flags.path;
 
-    cmd!(sh, "mv {curr_path} {replaced}")
+    let replaced = flags
+        .path
+        .file_name()
+        .and_then(|f| f.to_str())
+        .context("basename")?
+        .replace(" ", "_");
+    let full_replaced_path = flags.path.parent().context("parent path")?.join(replaced);
+
+    cmd!(sh, "mv {full_path} {full_replaced_path}")
         .run()
         .map_err(anyhow::Error::msg)
 }
